@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class coinCard extends StatelessWidget {
-  coinCard({
+class CoinCard extends StatelessWidget {
+  CoinCard({
     @required this.sent,
     @required this.name,
     @required this.symbol,

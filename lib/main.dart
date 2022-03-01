@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 
-import 'coinCard.dart';
+import 'coin_card.dart';
+import 'helper/coin_data.dart';
+import 'model/coin_model.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -26,6 +28,25 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  List<Coin> coins = [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getCoinData();
+  }
+
+  getCoinData() async {
+    CoinData coinData = new CoinData();
+    await coinData.getCoinData();
+    coins = coinData.coins;
+    print(coins.length);
+    setState(() {
+      _loading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,61 +70,27 @@ class _HomeState extends State<Home> {
           )
         ],
       ),
-      body: ListView(
-        scrollDirection: Axis.vertical,
-        children: [
-          coinCard(
-            sent: 'Recieved',
-            name: "0.0065 Bitcoin",
-            symbol: "9:38, AUG 27, 2019",
-            imageUrl:
-                'https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579',
-            // price: 38684,
-            change: 68,
-            // changepercentate: 1.148,
-          ),
-          coinCard(
-            sent: 'Sent',
-            name: 'Ethereum',
-            symbol: "9:38, AUG 27, 2019",
-            imageUrl:
-                'https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880',
-            // price: 2948.88,
-            change: 48.03,
-            // changepercentate: 10.84627,
-          ),
-          coinCard(
-            sent: 'Recieved',
-            name: "0.0049 Ripple",
-            symbol: "9:38, AUG 27, 2019",
-            imageUrl:
-                'https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png?1605778731',
-            // price: 2948.88,
-            change: 288.55,
-            // changepercentate: 10.84627,
-          ),
-          coinCard(
-            sent: 'Sent',
-            name: "0.0065 Bitcoin",
-            symbol: " 9:38, AUG 27, 2019",
-            imageUrl:
-                'https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579',
-            // price: 2948.88,
-            change: -67,
-            // changepercentate: 10.84627,
-          ),
-          coinCard(
-            sent: 'Recieved',
-            name: "0.0098 Ripple",
-            symbol: "9:38, AUG 27, 2019",
-            imageUrl:
-                'https://assets.coingecko.com/coins/images/44/large/xrp-symbol-white-128.png?1605778731',
-            // price: 2948.88,
-            change: 74,
-            // changepercentate: 10.84627,
-          ),
-        ],
-      ),
+      body: _loading
+          ? Center(
+              child: Container(
+                child: CircularProgressIndicator(),
+              ),
+            )
+          : Container(
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: coins.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return CoinCard(
+                      sent: 'Recieved',
+                      name: coins[index].amount + " " + coins[index].name,
+                      symbol: "9:38, AUG 27, 2019",
+                      imageUrl: coins[index].imageUrl,
+                      change: 68);
+                },
+              ),
+            ),
     );
   }
 }
